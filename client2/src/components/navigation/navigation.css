@@ -1,82 +1,167 @@
 .navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', sans-serif;
+}
+
+.nav-brand a {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #222;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 2.2rem;
+}
+
+.nav-links li a {
+  color: #555;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+  letter-spacing: -0.01em;
+}
+
+.nav-links li a:hover {
+  color: #000;
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.welcome-user {
+  color: #666;
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.login-btn,
+.register-btn,
+.admin-btn,
+.logout-btn {
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  transition: all 0.3s ease;
+  padding: 0.55rem 1.1rem;
+  border-radius: 20px;
+}
+
+.login-btn {
+  color: #06c;
+}
+
+.login-btn:hover {
+  color: #004e9c;
+}
+
+.register-btn {
+  background-color: #06c;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.register-btn:hover {
+  background-color: #004e9c;
+}
+
+.admin-btn {
+  background-color: #111;
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.admin-btn:hover {
+  background-color: #333;
+}
+
+.logout-btn {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.logout-btn:hover {
+  background-color: #f5f5f5;
+  color: #333;
+  border-color: #ccc;
+}
+
+@media (prefers-color-scheme: dark) {
+  .navigation {
+    background-color: rgba(28, 28, 30, 0.95);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
   
   .nav-brand a {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #4a6eb5;
-    text-decoration: none;
-  }
-  
-  .nav-links {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    gap: 2rem;
+    color: #f5f5f7;
   }
   
   .nav-links li a {
-    color: #444;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
+    color: #a1a1a6;
   }
   
   .nav-links li a:hover {
-    color: #4a6eb5;
-  }
-  
-  .nav-auth {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    color: #f5f5f7;
   }
   
   .welcome-user {
-    color: #444;
-    font-weight: 500;
-  }
-  
-  .login-btn, .register-btn {
-    text-decoration: none;
-    font-weight: 600;
+    color: #a1a1a6;
   }
   
   .login-btn {
-    color: #4a6eb5;
+    color: #0a84ff;
+  }
+  
+  .login-btn:hover {
+    color: #409cff;
   }
   
   .register-btn {
-    background-color: #4a6eb5;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.2s;
+    background-color: #0a84ff;
   }
   
   .register-btn:hover {
-    background-color: #3b5998;
+    background-color: #409cff;
+  }
+  
+  .admin-btn {
+    background-color: #f5f5f7;
+    color: #1c1c1e;
+  }
+  
+  .admin-btn:hover {
+    background-color: #ffffff;
   }
   
   .logout-btn {
-    background-color: transparent;
-    border: 1px solid #4a6eb5;
-    color: #4a6eb5;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    border-color: #424245;
+    color: #a1a1a6;
   }
   
   .logout-btn:hover {
-    background-color: #4a6eb5;
-    color: white;
+    background-color: #2c2c2e;
+    color: #f5f5f7;
+    border-color: #636366;
   }
+}

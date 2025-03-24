@@ -46,7 +46,7 @@ export const getLocationById = async (req, res) => {
  */
 export const createLocation = async (req, res) => {
   try {
-    const { title, description, position, icon } = req.body;
+    const { title, description, position, icon, imageUrl, gallery } = req.body;
     
     // Validate required fields
     if (!title || !description || !position || !icon) {
@@ -64,6 +64,8 @@ export const createLocation = async (req, res) => {
       description,
       position,
       icon,
+      imageUrl: imageUrl || null,
+      gallery: gallery || [],
       createdBy: req.user._id
     });
     
@@ -87,7 +89,7 @@ export const createLocation = async (req, res) => {
  */
 export const updateLocation = async (req, res) => {
   try {
-    const { title, description, position, icon } = req.body;
+    const { title, description, position, icon, imageUrl, gallery } = req.body;
     const locationId = req.params.id;
     
     // Find the location
@@ -105,15 +107,29 @@ export const updateLocation = async (req, res) => {
     // Update fields
     if (title) location.title = title;
     if (description) location.description = description;
+    if (imageUrl !== undefined) location.imageUrl = imageUrl;
+    if (gallery) location.gallery = gallery;
+    
     if (position) {
       if (position.lat) location.position.lat = position.lat;
       if (position.lng) location.position.lng = position.lng;
     }
+    
     if (icon) {
       if (icon.url) location.icon.url = icon.url;
       if (icon.scaledSize) {
-        if (icon.scaledSize.width) location.icon.scaledSize.width = icon.scaledSize.width;
-        if (icon.scaledSize.height) location.icon.scaledSize.height = icon.scaledSize.height;
+        if (icon.scaledSize.width !== undefined) 
+          location.icon.scaledSize.width = icon.scaledSize.width;
+        if (icon.scaledSize.height !== undefined) 
+          location.icon.scaledSize.height = icon.scaledSize.height;
+        
+        // Add percentage support
+        if (icon.scaledSize.widthPercent !== undefined)
+          location.icon.scaledSize.widthPercent = icon.scaledSize.widthPercent;
+        if (icon.scaledSize.heightPercent !== undefined)
+          location.icon.scaledSize.heightPercent = icon.scaledSize.heightPercent;
+        if (icon.scaledSize.usePercentage !== undefined)
+          location.icon.scaledSize.usePercentage = icon.scaledSize.usePercentage;
       }
     }
     
@@ -130,6 +146,98 @@ export const updateLocation = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+/**
+ * Add image to gallery
+ * POST /api/locations/:id/gallery
+ * @access Private
+ */
+export const addToGallery = async (req, res) => {
+  try {
+    const { url, caption } = req.body;
+    const locationId = req.params.id;
+    
+    if (!url) {
+      return res.status(400).json({ message: 'Please provide an image URL' });
+    }
+    
+    // Find the location
+    const location = await Location.findById(locationId);
+    
+    if (!location) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
+    
+    // Check ownership unless admin
+    if (location.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to update this location' });
+    }
+    
+    // Add to gallery
+    location.gallery.push({ url, caption: caption || '' });
+    
+    // Save updated location
+    const updatedLocation = await location.save();
+    
+    // Return the updated location with creator details
+    const populatedLocation = await Location.findById(updatedLocation._id)
+      .populate('createdBy', 'name email');
+    
+    res.json(populatedLocation);
+  } catch (error) {
+    console.error('Error adding to gallery:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+/**
+ * Remove image from gallery
+ * DELETE /api/locations/:id/gallery/:imageIndex
+ * @access Private
+ */
+export const removeFromGallery = async (req, res) => {
+  try {
+    const locationId = req.params.id;
+    const imageIndex = parseInt(req.params.imageIndex);
+    
+    if (isNaN(imageIndex)) {
+      return res.status(400).json({ message: 'Invalid image index' });
+    }
+    
+    // Find the location
+    const location = await Location.findById(locationId);
+    
+    if (!location) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
+    
+    // Check ownership unless admin
+    if (location.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to update this location' });
+    }
+    
+    // Check if image exists at that index
+    if (imageIndex < 0 || imageIndex >= location.gallery.length) {
+      return res.status(404).json({ message: 'Image not found in gallery' });
+    }
+    
+    // Remove from gallery
+    location.gallery.splice(imageIndex, 1);
+    
+    // Save updated location
+    const updatedLocation = await location.save();
+    
+    // Return the updated location with creator details
+    const populatedLocation = await Location.findById(updatedLocation._id)
+      .populate('createdBy', 'name email');
+    
+    res.json(populatedLocation);
+  } catch (error) {
+    console.error('Error removing from gallery:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 /**
  * Delete a location

@@ -6,7 +6,9 @@ import {
   createLocation,
   updateLocation,
   deleteLocation,
-  getLocationsByUser
+  getLocationsByUser,
+  addToGallery,
+  removeFromGallery
 } from '../controllers/location.controller.js';
 
 const router = express.Router();
@@ -22,5 +24,9 @@ router.get('/user/:userId', getLocationsByUser);
 router.post('/', requireAdmin, createLocation);
 router.put('/:id', requireAdmin, updateLocation);
 router.delete('/:id', requireAdmin, deleteLocation);
+
+// Gallery management routes
+router.post('/:id/gallery', requireAdmin, addToGallery);
+router.delete('/:id/gallery/:imageIndex', requireAdmin, removeFromGallery);
 
 export default router;

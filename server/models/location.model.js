@@ -21,6 +21,7 @@ const locationSchema = new mongoose.Schema({
       required: true
     }
   },
+  // Updated icon structure with percentage-based sizing
   icon: {
     url: {
       type: String,
@@ -35,9 +36,40 @@ const locationSchema = new mongoose.Schema({
       height: {
         type: Number,
         default: 40
+      },
+      // Add percentage options
+      widthPercent: {
+        type: Number,
+        default: null
+      },
+      heightPercent: {
+        type: Number,
+        default: null
+      },
+      usePercentage: {
+        type: Boolean,
+        default: false
       }
     }
   },
+  // Add image fields
+  imageUrl: {
+    type: String,
+    default: null,
+    trim: true
+  },
+  // Gallery images array
+  gallery: [{
+    url: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    caption: {
+      type: String,
+      trim: true
+    }
+  }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

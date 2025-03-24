@@ -1,99 +1,173 @@
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px); /* Adjusted to account for navbar height */
+  padding: 0 2rem; /* Removed vertical padding */
+  background-color: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', 'Helvetica Neue', sans-serif;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  margin: 0 0 0.5rem 0;
+  color: #1d1d1f;
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.022em;
+}
+
+.subtitle {
+  margin: 0 0 2rem 0;
+  color: #86868b;
+  font-size: 16px;
+  letter-spacing: -0.011em;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-weight: 500;
+  color: #444;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+input {
+  padding: 12px 14px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #06c;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+}
+
+.login-button {
+  margin-top: 8px;
+  padding: 12px 16px;
+  background-color: #06c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.011em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-button:hover {
+  background-color: #004e9c;
+}
+
+.login-button:disabled {
+  background-color: #90bde9;
+  cursor: not-allowed;
+}
+
+.register-link {
+  margin-top: 1.8rem;
+  text-align: center;
+  font-size: 14px;
+  color: #86868b;
+  letter-spacing: -0.01em;
+}
+
+.register-link a {
+  color: #06c;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  padding: 12px 14px;
+  background-color: #fff2f2;
+  color: #FF3B30;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .login-container {
+    background-color: #1d1d1f;
   }
   
   .login-form-container {
-    width: 100%;
-    max-width: 400px;
-    padding: 30px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #2c2c2e;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   }
   
   h1 {
-    margin: 0 0 8px 0;
-    color: #333;
-    font-size: 28px;
+    color: #f5f5f7;
   }
   
   .subtitle {
-    margin: 0 0 24px 0;
-    color: #666;
-  }
-  
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    color: #a1a1a6;
   }
   
   label {
-    font-weight: 500;
-    color: #444;
+    color: #e5e5ea;
   }
   
   input {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+    background-color: #3a3a3c;
+    border-color: #3a3a3c;
+    color: #f5f5f7;
+  }
+  
+  input:focus {
+    border-color: #0a84ff;
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
   }
   
   .login-button {
-    margin-top: 10px;
-    padding: 12px;
-    background-color: #4a6eb5;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    background-color: #0a84ff;
   }
   
   .login-button:hover {
-    background-color: #3b5998;
-  }
-  
-  .login-button:disabled {
-    background-color: #9db1d8;
-    cursor: not-allowed;
+    background-color: #409cff;
   }
   
   .register-link {
-    margin-top: 24px;
-    text-align: center;
-    font-size: 14px;
-    color: #666;
+    color: #a1a1a6;
   }
   
   .register-link a {
-    color: #4a6eb5;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  
-  .register-link a:hover {
-    text-decoration: underline;
+    color: #0a84ff;
   }
   
   .error-message {
-    padding: 10px;
-    background-color: #ffebee;
-    color: #c62828;
-    border-radius: 4px;
-    margin-bottom: 20px;
+    background-color: #3a2425;
+    color: #ff6961;
   }
+}

@@ -1,108 +1,94 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
-import './map.css';
-import {useDispatch, useSelector} from 'react-redux';
-import { fetchLocationsRequest } from '../../redux/modules/location/locationActions';
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  Marker,
+  InfoWindow,
+} from "@react-google-maps/api";
+import "./map.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchLocationsRequest } from "../../redux/modules/location/locationActions";
 
 // Custom map styles - this is just an example, you can customize it further
 const mapStyles = [
+  // Base land styling
   {
-    featureType: 'water',
-    elementType: 'geometry',
-    stylers: [{ color: '#e9e9e9' }, { lightness: 17 }]
+    featureType: "all",
+    elementType: "geometry",
+    stylers: [{ color: "#f5f5f5" }], // Light background for land
   },
+  // Ocean styling
   {
-    featureType: 'landscape',
-    elementType: 'geometry',
-    stylers: [{ color: '#f5f5f5' }, { lightness: 20 }]
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#cde9f5" }], // Light blue for water
   },
+  // Hide all labels by default
   {
-    featureType: 'road.highway',
-    elementType: 'geometry.fill',
-    stylers: [{ color: '#ffffff' }, { lightness: 17 }]
+    featureType: "all",
+    elementType: "labels",
+    stylers: [{ visibility: "off" }],
   },
+  // Show only country labels
   {
-    featureType: 'road.highway',
-    elementType: 'geometry.stroke',
-    stylers: [{ color: '#ffffff' }, { lightness: 29 }, { weight: 0.2 }]
+    featureType: "administrative.country",
+    elementType: "labels",
+    stylers: [{ visibility: "on" }],
   },
+  // Keep country boundaries visible
   {
-    featureType: 'road.arterial',
-    elementType: 'geometry',
-    stylers: [{ color: '#ffffff' }, { lightness: 18 }]
+    featureType: "administrative.country",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#d8d8d8" }, { weight: 0.5 }],
   },
+  // Hide all roads
   {
-    featureType: 'poi',
-    elementType: 'geometry',
-    stylers: [{ color: '#f5f5f5' }, { lightness: 21 }]
+    featureType: "road",
+    stylers: [{ visibility: "off" }],
   },
+  // Hide points of interest
   {
-    featureType: 'poi.park',
-    elementType: 'geometry',
-    stylers: [{ color: '#dedede' }, { lightness: 21 }]
-  }
+    featureType: "poi",
+    stylers: [{ visibility: "off" }],
+  },
+  // Hide transit
+  {
+    featureType: "transit",
+    stylers: [{ visibility: "off" }],
+  },
 ];
 
 // Define locations with data for markers
-const locations = [
-  {
-    id: 1,
-    position: { lat: 48.8566, lng: 2.3522 },
-    title: 'Paris',
-    description: 'The City of Light and Love',
-    icon: {
-      url: '/icons/marker.png', // Add your custom icon
-      scaledSize: { width: 40, height: 40 }
-    }
-  },
-  {
-    id: 2,
-    position: { lat: 40.7128, lng: -74.006 },
-    title: 'New York',
-    description: 'The Big Apple - a global metropolis',
-    icon: {
-      url: '/icons/play-alt.png',
-      scaledSize: { width: 40, height: 40 }
-    }
-  },
-  {
-    id: 3,
-    position: { lat: 35.6762, lng: 139.6503 },
-    title: 'Tokyo',
-    description: 'Japan\'s busy capital - mixing ultramodern and traditional',
-    icon: {
-      url: '/icons/rocket-lunch.png',
-      scaledSize: { width: 40, height: 40 }
-    }
-  }
-];
 
 const containerStyle = {
-  width: '100%',
-  height: '91vh'
+  width: "100%",
+  height: "91vh",
 };
 
 const center = {
   lat: 20, // Default center
-  lng: 0
+  lng: 0,
 };
 
 function Map() {
   const dispatch = useDispatch();
-  const { locations, loading: locationsLoading } = useSelector(state => state.location);
-  
+  const { locations, loading: locationsLoading } = useSelector(
+    (state) => state.location
+  );
+
   const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
+    id: "google-map-script",
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
-  
+
   const [map, setMap] = useState(null);
   const [activeMarker, setActiveMarker] = useState(null);
   const [hoveredMarker, setHoveredMarker] = useState(null);
-  
+  const hoverTimeoutRef = useRef(null); // Add this new ref for timeout
+
   // For storing refs to markers for mouseover handling
   const markerRefs = useRef({});
-  
+
   // Fetch locations when component mounts
   useEffect(() => {
     dispatch(fetchLocationsRequest());
@@ -121,10 +107,29 @@ function Map() {
   };
 
   const handleMarkerMouseOver = (markerId) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
     setHoveredMarker(markerId);
   };
 
   const handleMarkerMouseOut = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredMarker(null);
+    }, 300); // 300ms delay before hiding
+  };
+
+  const handleInfoWindowMouseOver = () => {
+    // Keep InfoWindow open when mouse is over it
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  };
+
+  const handleInfoWindowMouseOut = () => {
+    // Hide InfoWindow when mouse leaves it
     setHoveredMarker(null);
   };
 
@@ -147,16 +152,29 @@ function Map() {
         zoom={3}
         options={{
           styles: mapStyles,
-          disableDefaultUI: false,
-          zoomControl: true,
-          mapTypeControl: true,
+          disableDefaultUI: true, // Hide all controls
+          zoomControl: false,
+          fullscreenControl: false,
+          mapTypeControl: false,
           streetViewControl: false,
-          fullscreenControl: true
+          minZoom: 2, // Prevent zooming out too far
+          maxZoom: 7, // Optional: limit maximum zoom
+          backgroundColor: "#f5f5f5", // Match your land color
+          draggableCursor: "default",
+          restriction: {
+            latLngBounds: {
+              north: 85, // Maximum north latitude
+              south: -85, // Maximum south latitude
+              west: -180,
+              east: 180,
+            },
+            strictBounds: true, // Allow horizontal wrapping
+          },
         }}
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {locations.map(location => (
+        {locations.map((location) => (
           <Marker
             key={location._id}
             position={location.position}
@@ -171,29 +189,69 @@ function Map() {
         {/* Show info window for clicked marker */}
         {activeMarker && (
           <InfoWindow
-            position={locations.find(loc => loc._id === activeMarker).position}
+            position={
+              locations.find((loc) => loc._id === activeMarker).position
+            }
             onCloseClick={handleInfoWindowClose}
           >
             <div className="info-window">
-              <h3>{locations.find(loc => loc._id === activeMarker).title}</h3>
-              <p>{locations.find(loc => loc._id === activeMarker).description}</p>
-              <p className="creator">
-                Added by: {locations.find(loc => loc._id === activeMarker).createdBy.name}
-              </p>
+              {/* Image at the top - you'll need to add imageUrl to your location data */}
+              <img
+                src={
+                  locations.find((loc) => loc._id === activeMarker).imageUrl ||
+                  "https://via.placeholder.com/280x140"
+                }
+                alt={locations.find((loc) => loc._id === activeMarker).title}
+                className="info-window-img"
+              />
+
+              <div className="info-window-content">
+                <h3>
+                  {locations.find((loc) => loc._id === activeMarker).title}
+                </h3>
+                <p>
+                  {locations
+                    .find((loc) => loc._id === activeMarker)
+                    .description.substring(0, 100)}
+                  {locations.find((loc) => loc._id === activeMarker).description
+                    .length > 100
+                    ? "..."
+                    : ""}
+                </p>
+
+                <button className="read-more-btn">Read more</button>
+
+                <p className="creator">
+                  Added by:{" "}
+                  {
+                    locations.find((loc) => loc._id === activeMarker).createdBy
+                      .name
+                  }
+                </p>
+              </div>
             </div>
           </InfoWindow>
         )}
 
         {/* Show info window for hovered marker (if not the same as active) */}
-        {hoveredMarker && hoveredMarker !== activeMarker && (
+        {/* {hoveredMarker && hoveredMarker !== activeMarker && (
           <InfoWindow
-            position={locations.find(loc => loc._id === hoveredMarker).position}
+            position={
+              locations.find((loc) => loc._id === hoveredMarker).position
+            }
+            onCloseClick={() => setHoveredMarker(null)}
           >
-            <div className="info-window">
-              <h3>{locations.find(loc => loc._id === hoveredMarker).title}</h3>
+            <div
+              className="info-window"
+              onMouseOver={handleInfoWindowMouseOver}
+              onMouseOut={handleInfoWindowMouseOut}
+            >
+              <h3>
+                {locations.find((loc) => loc._id === hoveredMarker).title}
+              </h3>
             </div>
           </InfoWindow>
-        )}
+        )} */}
       </GoogleMap>
     </div>
   ) : (

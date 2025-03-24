@@ -30,9 +30,8 @@ function App() {
         <Routes>
           <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />} />
           <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />} />
-          <Route path="/" element={<div className="home-container"><h1>Welcome to Explore the World</h1></div>} />
+          <Route path="/" element={<div className="explore-container"><ExplorePage/></div>} />
           <Route path="/explore" element={<div className="explore-container"><ExplorePage/></div>} />
-          <Route path="/about" element={<div className="about-container"><h1>About Us</h1></div>} />
           <Route path="/admin" element={<AdminPanel/>} />
         </Routes>
       </div>

@@ -7,6 +7,7 @@ const Navigation = () => {
     const dispatch = useDispatch();
     const { user } = useSelector(state => state.auth);
 
+
     const handleLogout = () => {
         dispatch(logout());
     }
@@ -18,15 +19,17 @@ const Navigation = () => {
       </div>
       
       <ul className="nav-links">
-        <li><a href="/">Home</a></li>
-        <li><a href="/explore">Explore</a></li>
-        <li><a href="/about">About</a></li>
+        {/* <li><a href="/explore">Explore</a></li> */}
       </ul>
       
       <div className="nav-auth">
+        
         {user ? (
           <>
             <span className="welcome-user">Welcome, {user.name || 'User'}</span>
+            {user.role == "admin" && (
+              <a href="/admin" className="admin-btn">Admin Panel</a>
+            )}
             <button onClick={handleLogout} className="logout-btn">Logout</button>
           </>
         ) : (
